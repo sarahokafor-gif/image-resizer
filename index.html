@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer | Free Photo Resizer for Social Media & Official Use</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free online image resizer for social media profiles, passport photos, and official documents. Resize photos to exact dimensions for LinkedIn, Facebook, Instagram, Twitter, and more. No upload - works locally.">
+    <meta name="keywords" content="image resizer, photo resizer, resize image, passport photo, profile picture, social media image size, LinkedIn photo size, Facebook profile picture, Instagram dimensions, free image tool">
+    <meta name="author" content="Chambers of Sarah Okafor">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://image-resizer.pages.dev/">
+    <meta property="og:title" content="Image Resizer | Free Photo Resizer for Social Media & Official Use">
+    <meta property="og:description" content="Resize photos for social media profiles, passport photos, and official documents. Free, secure, works locally.">
+    <meta property="og:image" content="https://image-resizer.pages.dev/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://image-resizer.pages.dev/">
+    <meta property="twitter:title" content="Image Resizer | Free Photo Resizer for Social Media & Official Use">
+    <meta property="twitter:description" content="Resize photos for social media profiles, passport photos, and official documents. Free, secure, works locally.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼️</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Image Resizer",
+        "description": "Free online image resizer for social media profiles, passport photos, and official documents.",
+        "url": "https://image-resizer.pages.dev",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "GBP"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "Chambers of Sarah Okafor"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal hidden">
+        <div class="auth-modal-content">
+            <div class="auth-header">
+                <h1>Image Resizer</h1>
+                <p class="auth-subtitle">Free Photo Resizer Tool</p>
+            </div>
+
+            <!-- Login/Register View -->
+            <div id="loginRegisterView">
+                <h2 id="authTitle">Welcome Back</h2>
+                <p id="authSubtitle" class="auth-description">Log in to access Image Resizer</p>
+
+                <div id="authError" class="auth-error hidden"></div>
+                <div id="authSuccess" class="auth-success hidden"></div>
+
+                <form id="authForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="authEmail">Email</label>
+                        <input type="email" id="authEmail" required placeholder="you@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="authPassword">Password</label>
+                        <input type="password" id="authPassword" required placeholder="Your password">
+                    </div>
+
+                    <div id="confirmPasswordGroup" class="form-group hidden">
+                        <label for="authConfirmPassword">Confirm Password</label>
+                        <input type="password" id="authConfirmPassword" placeholder="Confirm your password">
+                    </div>
+
+                    <div id="disclaimerBox" class="disclaimer-box hidden">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="termsCheckbox">
+                            <span>I understand this is a free tool provided as-is.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-full">
+                        Log In
+                    </button>
+
+                    <button type="button" id="forgotPasswordBtn" class="btn-link">
+                        Forgot password?
+                    </button>
+                </form>
+
+                <div class="auth-switch">
+                    <span id="authSwitchText">Don't have an account?</span>
+                    <button type="button" id="authSwitchBtn" class="btn-link">Register for free</button>
+                </div>
+
+                <div class="auth-benefits">
+                    <h3>Why use Image Resizer?</h3>
+                    <ul>
+                        <li>Resize for any social media platform</li>
+                        <li>Passport & official photo sizes</li>
+                        <li>Custom dimensions supported</li>
+                        <li>Your photos stay on your device</li>
+                        <li>100% free - no hidden costs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Reset Password View -->
+            <div id="resetPasswordView" class="hidden">
+                <h2>Reset Password</h2>
+                <p class="auth-description">Enter your email to receive a reset link</p>
+
+                <div id="resetError" class="auth-error hidden"></div>
+                <div id="resetSuccess" class="auth-success hidden"></div>
+
+                <form id="resetForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="resetEmail">Email</label>
+                        <input type="email" id="resetEmail" required placeholder="you@example.com">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Send Reset Link
+                    </button>
+                </form>
+
+                <button type="button" id="backToLoginBtn" class="btn-link">
+                    Back to login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="/" class="logo-link">
+                        <h1>Image Resizer</h1>
+                    </a>
+                    <p class="tagline">Resize photos for social media & official use</p>
+                </div>
+                <div class="header-right">
+                    <!-- Help Button -->
+                    <button id="helpBtn" class="btn-help" title="Help">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>Help</span>
+                    </button>
+                    <div id="userMenuBtn" class="user-menu hidden">
+                        <button class="user-menu-trigger">
+                            <span class="user-initial">U</span>
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div id="userDropdown" class="user-dropdown hidden">
+                            <div class="dropdown-header">
+                                <span id="userEmail">user@example.com</span>
+                            </div>
+                            <hr>
+                            <button id="logoutBtn" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Log out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="card upload-section">
+                <h2>Upload Image</h2>
+                <p class="section-description">Select or drag an image to resize</p>
+
+                <div id="dropZone" class="drop-zone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Drop image here or <span class="browse-link">browse</span></p>
+                    <p class="supported-formats">Supports: JPG, PNG, WebP, GIF</p>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                </div>
+
+                <div id="imagePreview" class="image-preview hidden">
+                    <div class="preview-container">
+                        <div class="preview-box">
+                            <h4>Original</h4>
+                            <div class="preview-image-wrapper">
+                                <img id="originalImage" alt="Original image">
+                            </div>
+                            <p id="originalSize" class="image-info"></p>
+                        </div>
+                        <div class="preview-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </div>
+                        <div class="preview-box">
+                            <h4>Resized</h4>
+                            <div class="preview-image-wrapper">
+                                <canvas id="resizedCanvas"></canvas>
+                            </div>
+                            <p id="resizedSize" class="image-info"></p>
+                        </div>
+                    </div>
+                    <button id="changeImageBtn" class="btn btn-outline btn-sm">Change Image</button>
+                </div>
+            </section>
+
+            <!-- Size Selection Section -->
+            <section id="resizeSection" class="card resize-section hidden">
+                <h2>Choose Size</h2>
+                <p class="section-description">Select a preset or enter custom dimensions</p>
+
+                <!-- Size Category Tabs -->
+                <div class="size-tabs">
+                    <button class="size-tab active" data-category="social">Social Media</button>
+                    <button class="size-tab" data-category="official">Official / ID</button>
+                    <button class="size-tab" data-category="web">Web / Apps</button>
+                    <button class="size-tab" data-category="custom">Custom</button>
+                </div>
+
+                <!-- Social Media Presets -->
+                <div id="socialPresets" class="preset-grid">
+                    <button class="preset-btn" data-width="400" data-height="400">
+                        <span class="preset-icon">in</span>
+                        <span class="preset-name">LinkedIn Profile</span>
+                        <span class="preset-size">400 × 400</span>
+                    </button>
+                    <button class="preset-btn" data-width="1584" data-height="396">
+                        <span class="preset-icon">in</span>
+                        <span class="preset-name">LinkedIn Banner</span>
+                        <span class="preset-size">1584 × 396</span>
+                    </button>
+                    <button class="preset-btn" data-width="180" data-height="180">
+                        <span class="preset-icon">f</span>
+                        <span class="preset-name">Facebook Profile</span>
+                        <span class="preset-size">180 × 180</span>
+                    </button>
+                    <button class="preset-btn" data-width="820" data-height="312">
+                        <span class="preset-icon">f</span>
+                        <span class="preset-name">Facebook Cover</span>
+                        <span class="preset-size">820 × 312</span>
+                    </button>
+                    <button class="preset-btn" data-width="320" data-height="320">
+                        <span class="preset-icon">ig</span>
+                        <span class="preset-name">Instagram Profile</span>
+                        <span class="preset-size">320 × 320</span>
+                    </button>
+                    <button class="preset-btn" data-width="1080" data-height="1080">
+                        <span class="preset-icon">ig</span>
+                        <span class="preset-name">Instagram Post</span>
+                        <span class="preset-size">1080 × 1080</span>
+                    </button>
+                    <button class="preset-btn" data-width="1080" data-height="1920">
+                        <span class="preset-icon">ig</span>
+                        <span class="preset-name">Instagram Story</span>
+                        <span class="preset-size">1080 × 1920</span>
+                    </button>
+                    <button class="preset-btn" data-width="400" data-height="400">
+                        <span class="preset-icon">X</span>
+                        <span class="preset-name">X (Twitter) Profile</span>
+                        <span class="preset-size">400 × 400</span>
+                    </button>
+                    <button class="preset-btn" data-width="1500" data-height="500">
+                        <span class="preset-icon">X</span>
+                        <span class="preset-name">X (Twitter) Header</span>
+                        <span class="preset-size">1500 × 500</span>
+                    </button>
+                    <button class="preset-btn" data-width="800" data-height="800">
+                        <span class="preset-icon">yt</span>
+                        <span class="preset-name">YouTube Profile</span>
+                        <span class="preset-size">800 × 800</span>
+                    </button>
+                    <button class="preset-btn" data-width="2560" data-height="1440">
+                        <span class="preset-icon">yt</span>
+                        <span class="preset-name">YouTube Banner</span>
+                        <span class="preset-size">2560 × 1440</span>
+                    </button>
+                    <button class="preset-btn" data-width="1280" data-height="720">
+                        <span class="preset-icon">yt</span>
+                        <span class="preset-name">YouTube Thumbnail</span>
+                        <span class="preset-size">1280 × 720</span>
+                    </button>
+                </div>
+
+                <!-- Official / ID Presets -->
+                <div id="officialPresets" class="preset-grid hidden">
+                    <button class="preset-btn" data-width="413" data-height="531">
+                        <span class="preset-icon">🇬🇧</span>
+                        <span class="preset-name">UK Passport</span>
+                        <span class="preset-size">35 × 45 mm</span>
+                    </button>
+                    <button class="preset-btn" data-width="600" data-height="600">
+                        <span class="preset-icon">🇺🇸</span>
+                        <span class="preset-name">US Passport</span>
+                        <span class="preset-size">2 × 2 inch</span>
+                    </button>
+                    <button class="preset-btn" data-width="413" data-height="531">
+                        <span class="preset-icon">🇪🇺</span>
+                        <span class="preset-name">EU/Schengen Visa</span>
+                        <span class="preset-size">35 × 45 mm</span>
+                    </button>
+                    <button class="preset-btn" data-width="354" data-height="472">
+                        <span class="preset-icon">🇮🇳</span>
+                        <span class="preset-name">India Passport</span>
+                        <span class="preset-size">35 × 35 mm</span>
+                    </button>
+                    <button class="preset-btn" data-width="295" data-height="413">
+                        <span class="preset-icon">🇨🇳</span>
+                        <span class="preset-name">China Visa</span>
+                        <span class="preset-size">33 × 48 mm</span>
+                    </button>
+                    <button class="preset-btn" data-width="450" data-height="600">
+                        <span class="preset-icon">🪪</span>
+                        <span class="preset-name">UK Driving Licence</span>
+                        <span class="preset-size">45 × 35 mm</span>
+                    </button>
+                    <button class="preset-btn" data-width="260" data-height="320">
+                        <span class="preset-icon">📋</span>
+                        <span class="preset-name">CV / Resume</span>
+                        <span class="preset-size">260 × 320</span>
+                    </button>
+                    <button class="preset-btn" data-width="300" data-height="300">
+                        <span class="preset-icon">🏢</span>
+                        <span class="preset-name">ID Badge</span>
+                        <span class="preset-size">300 × 300</span>
+                    </button>
+                </div>
+
+                <!-- Web / Apps Presets -->
+                <div id="webPresets" class="preset-grid hidden">
+                    <button class="preset-btn" data-width="16" data-height="16">
+                        <span class="preset-icon">🌐</span>
+                        <span class="preset-name">Favicon (16px)</span>
+                        <span class="preset-size">16 × 16</span>
+                    </button>
+                    <button class="preset-btn" data-width="32" data-height="32">
+                        <span class="preset-icon">🌐</span>
+                        <span class="preset-name">Favicon (32px)</span>
+                        <span class="preset-size">32 × 32</span>
+                    </button>
+                    <button class="preset-btn" data-width="180" data-height="180">
+                        <span class="preset-icon">🍎</span>
+                        <span class="preset-name">Apple Touch Icon</span>
+                        <span class="preset-size">180 × 180</span>
+                    </button>
+                    <button class="preset-btn" data-width="512" data-height="512">
+                        <span class="preset-icon">📱</span>
+                        <span class="preset-name">App Icon (Android)</span>
+                        <span class="preset-size">512 × 512</span>
+                    </button>
+                    <button class="preset-btn" data-width="1024" data-height="1024">
+                        <span class="preset-icon">📱</span>
+                        <span class="preset-name">App Icon (iOS)</span>
+                        <span class="preset-size">1024 × 1024</span>
+                    </button>
+                    <button class="preset-btn" data-width="150" data-height="150">
+                        <span class="preset-icon">👤</span>
+                        <span class="preset-name">Avatar (Small)</span>
+                        <span class="preset-size">150 × 150</span>
+                    </button>
+                    <button class="preset-btn" data-width="300" data-height="300">
+                        <span class="preset-icon">👤</span>
+                        <span class="preset-name">Avatar (Medium)</span>
+                        <span class="preset-size">300 × 300</span>
+                    </button>
+                    <button class="preset-btn" data-width="1200" data-height="630">
+                        <span class="preset-icon">🔗</span>
+                        <span class="preset-name">OG Image (Social Share)</span>
+                        <span class="preset-size">1200 × 630</span>
+                    </button>
+                    <button class="preset-btn" data-width="1920" data-height="1080">
+                        <span class="preset-icon">🖥️</span>
+                        <span class="preset-name">Full HD</span>
+                        <span class="preset-size">1920 × 1080</span>
+                    </button>
+                    <button class="preset-btn" data-width="3840" data-height="2160">
+                        <span class="preset-icon">🖥️</span>
+                        <span class="preset-name">4K UHD</span>
+                        <span class="preset-size">3840 × 2160</span>
+                    </button>
+                </div>
+
+                <!-- Custom Size -->
+                <div id="customSize" class="custom-size hidden">
+                    <div class="custom-inputs">
+                        <div class="form-group">
+                            <label for="customWidth">Width (px)</label>
+                            <input type="number" id="customWidth" min="1" max="10000" value="800">
+                        </div>
+                        <button id="lockAspectBtn" class="aspect-lock active" title="Lock aspect ratio">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </button>
+                        <div class="form-group">
+                            <label for="customHeight">Height (px)</label>
+                            <input type="number" id="customHeight" min="1" max="10000" value="600">
+                        </div>
+                    </div>
+                    <button id="applyCustomBtn" class="btn btn-primary">Apply Size</button>
+                </div>
+
+                <!-- Output Options -->
+                <div class="output-options">
+                    <div class="form-group">
+                        <label for="outputFormat">Format</label>
+                        <select id="outputFormat">
+                            <option value="jpeg">JPEG</option>
+                            <option value="png">PNG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="outputQuality">Quality: <span id="qualityValue">90</span>%</label>
+                        <input type="range" id="outputQuality" min="10" max="100" value="90">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Download Section -->
+            <section id="downloadSection" class="card download-section hidden">
+                <h2>Download</h2>
+                <div class="download-info">
+                    <p><strong>New size:</strong> <span id="finalSize"></span></p>
+                    <p><strong>Format:</strong> <span id="finalFormat"></span></p>
+                </div>
+                <button id="downloadBtn" class="btn btn-success btn-large">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download Resized Image
+                </button>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-promo">
+                <p>
+                    <strong>Also try:</strong>
+                    <a href="https://www.courtbundlebuilder.co.uk" target="_blank" rel="noopener noreferrer">Court Bundle Builder</a> |
+                    <a href="https://splitsmart.pages.dev" target="_blank" rel="noopener noreferrer">SplitSmart</a> |
+                    <a href="https://chronology-builder.pages.dev" target="_blank" rel="noopener noreferrer">Chronology Builder</a>
+                </p>
+            </div>
+            <div class="footer-content">
+                <div class="footer-badges">
+                    <span class="badge">100% Free</span>
+                    <span class="badge">No Upload</span>
+                    <span class="badge">Works Offline</span>
+                </div>
+                <p class="disclaimer">
+                    Your images are processed locally - nothing is uploaded to any server.
+                </p>
+                <p class="copyright">
+                    &copy; 2026 Chambers of Sarah Okafor. All rights reserved.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="help-modal hidden">
+        <div class="help-modal-content">
+            <div class="help-header">
+                <h2>How to Use Image Resizer</h2>
+                <button class="btn-close" onclick="ImageResizer.closeHelp()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="help-tabs">
+                <button class="help-tab active" data-tab="quickstart">Quick Start</button>
+                <button class="help-tab" data-tab="presets">Presets</button>
+                <button class="help-tab" data-tab="custom">Custom Sizes</button>
+            </div>
+
+            <div class="help-content">
+                <div id="quickstartPanel" class="help-panel">
+                    <div class="help-notice">
+                        <strong>100% Free</strong> - Just register to get started. No hidden costs.
+                    </div>
+                    <h3>Quick Start Guide</h3>
+                    <ol class="help-steps">
+                        <li><span class="step-num">1</span><span><strong>Upload an image</strong> - Drag & drop or click to browse</span></li>
+                        <li><span class="step-num">2</span><span><strong>Choose a size</strong> - Pick a preset or enter custom dimensions</span></li>
+                        <li><span class="step-num">3</span><span><strong>Adjust quality</strong> - Use the slider to balance size vs quality</span></li>
+                        <li><span class="step-num">4</span><span><strong>Download</strong> - Get your resized image</span></li>
+                    </ol>
+                </div>
+
+                <div id="presetsPanel" class="help-panel hidden">
+                    <h3>Preset Sizes</h3>
+                    <ul class="help-list">
+                        <li><strong>Social Media</strong> - LinkedIn, Facebook, Instagram, X (Twitter), YouTube</li>
+                        <li><strong>Official / ID</strong> - Passport photos (UK, US, EU, India, China), driving licence, CV</li>
+                        <li><strong>Web / Apps</strong> - Favicons, app icons, avatars, OG images, screen resolutions</li>
+                    </ul>
+                    <p class="help-tip"><strong>Tip:</strong> Presets use the exact dimensions required by each platform.</p>
+                </div>
+
+                <div id="customPanel" class="help-panel hidden">
+                    <h3>Custom Sizes</h3>
+                    <ul class="help-list">
+                        <li><strong>Lock aspect ratio</strong> - Click the lock icon to maintain proportions</li>
+                        <li><strong>Enter dimensions</strong> - Type exact width and height in pixels</li>
+                        <li><strong>Format options</strong> - JPEG (smaller files), PNG (transparency), WebP (modern)</li>
+                        <li><strong>Quality slider</strong> - Higher = better quality but larger file size</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
